@@ -2,13 +2,9 @@ import pandas as pd
 import glob
 import os
 
-# Folder containing the CSV files
 data_folder = "data/"
-
-# Get all CSV files (this will find all three, regardless of names)
 csv_files = glob.glob(os.path.join(data_folder, "*.csv"))
 
-# List to hold processed dataframes
 all_data = []
 
 for file in csv_files:
@@ -18,6 +14,9 @@ for file in csv_files:
     # Keep only Pink Morsels
     df = df[df['product'] == 'pink morsel']
     
+    # Clean the price column: remove '$' and convert to float
+    df['price'] = df['price'].replace('[\$,]', '', regex=True).astype(float)
+    
     # Calculate sales = quantity * price
     df['sales'] = df['quantity'] * df['price']
     
@@ -26,10 +25,7 @@ for file in csv_files:
     
     all_data.append(df)
 
-# Combine all data
 final_df = pd.concat(all_data, ignore_index=True)
-
-# Save to a new CSV file
 final_df.to_csv('formatted_data.csv', index=False)
 
 print("Processing complete. Output saved to formatted_data.csv")
